@@ -1,0 +1,53 @@
+{
+    "name": "reversi",
+    "version": "0.1.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack-dev-server --mode development",
+        "start-prod": "webpack-dev-server --mode production",
+        "build": "webpack --mode development",
+        "build-prod": "webpack --mode production"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/rarula/Reversi.git"
+    },
+    "author": "rarula",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/rarula/Reversi/issues"
+    },
+    "homepage": "https://github.com/rarula/Reversi#readme",
+    "devDependencies": {
+        "@babel/core": "^7.22.20",
+        "@babel/preset-env": "^7.22.20",
+        "@babel/preset-react": "^7.22.15",
+        "@babel/preset-typescript": "^7.22.15",
+        "@linaria/webpack-loader": "^5.0.1",
+        "@types/node": "^20.6.4",
+        "@types/react": "^18.2.22",
+        "@types/react-dom": "^18.2.7",
+        "@typescript-eslint/eslint-plugin": "^6.7.2",
+        "@typescript-eslint/parser": "^6.7.2",
+        "babel-loader": "^9.1.3",
+        "css-loader": "^6.8.1",
+        "dprint": "^0.41.0",
+        "eslint": "^8.50.0",
+        "eslint-plugin-react": "^7.33.2",
+        "html-webpack-plugin": "^5.5.3",
+        "mini-css-extract-plugin": "^2.7.6",
+        "ts-loader": "^9.4.4",
+        "typescript": "^5.2.2",
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^4.15.1"
+    },
+    "dependencies": {
+        "@linaria/babel-preset": "^5.0.1",
+        "@linaria/core": "^5.0.1",
+        "@linaria/react": "^5.0.1",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    }
+}
