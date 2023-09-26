@@ -1,7 +1,9 @@
 import { css } from '@linaria/core';
 
+import { StoneType } from '../../types/StoneType';
+
 type Props = {
-    type: 'black' | 'white';
+    type: StoneType;
 };
 
 const stoneStyles = css`

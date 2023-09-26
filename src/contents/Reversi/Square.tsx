@@ -1,12 +1,19 @@
 import { css } from '@linaria/core';
 
+import { useGuide } from '../../contexts/Guide';
+import { Reversi } from '../../Reversi';
+import { BoardInfo } from '../../types/BoardInfo';
 import { StoneType } from '../../types/StoneType';
-import { useGameBoard, useTurn } from '../Game';
 import Stone from './Stone';
 
 type Props = {
     row: number;
     column: number;
+    canClick: boolean;
+
+    reversi: Reversi;
+    reversiBoard: BoardInfo[][];
+    setReversiBoard: React.Dispatch<React.SetStateAction<BoardInfo[][]>>;
 };
 
 const squareStyles = css`
@@ -38,30 +45,33 @@ const whiteOverlayStyles = css`
     background-color: #ffffff6d;
 `;
 
-const Square = ({ row, column }: Props): JSX.Element => {
-    const { isBlackTurn } = useTurn();
-    const { gameBoard, tryPlace, getReversible } = useGameBoard();
+const Square = ({ row, column, canClick, reversi, reversiBoard, setReversiBoard }: Props): JSX.Element => {
+    const { guide } = useGuide();
 
     const handleClick = (): void => {
-        const stone: StoneType = isBlackTurn ? 'BLACK' : 'WHITE';
-        tryPlace(stone, row, column);
+        if (canClick) {
+            reversi.tryPlace(row, column);
+
+            // structuredClone()で配列のディープコピーを作成する
+            setReversiBoard(structuredClone(reversiBoard));
+        }
     };
 
-    const friendlyStone: StoneType = isBlackTurn ? 'BLACK' : 'WHITE';
-    const reversible = getReversible(friendlyStone, row, column);
+    const stone: StoneType = reversi.isBlackTurn ? 'BLACK' : 'WHITE';
+    const reversible = reversi.getReversibleCoords(stone, row, column);
 
     return (
         <>
             <td className={squareStyles} onClick={handleClick}>
-                {gameBoard[row][column] === 'EMPTY'
-                    ? 1 <= reversible.length && (
-                        isBlackTurn
+                {reversi.board[row][column] === 'EMPTY'
+                    ? (guide && 1 <= reversible.length) && (
+                        reversi.isBlackTurn
                             ? <div className={blackOverlayStyles} />
                             : <div className={whiteOverlayStyles} />
                     )
-                    : gameBoard[row][column] === 'BLACK'
-                    ? <Stone type='black' />
-                    : <Stone type='white' />}
+                    : reversi.board[row][column] === 'BLACK'
+                    ? <Stone type='BLACK' />
+                    : <Stone type='WHITE' />}
             </td>
         </>
     );
