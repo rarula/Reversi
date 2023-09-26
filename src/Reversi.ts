@@ -1,10 +1,8 @@
 import { BoardInfo } from './types/BoardInfo';
 import { GameInfo } from './types/GameInfo';
-import { PlayStyle } from './types/PlayStyle';
 import { StoneType } from './types/StoneType';
 
 export class Reversi {
-    private _playStyle: PlayStyle;
     private _isBlackTurn: boolean;
     private _board: BoardInfo[][];
 
@@ -20,16 +18,11 @@ export class Reversi {
         [30, -12, 0, -1, -1, 0, -12, 30],
     ];
 
-    constructor(playStyle: PlayStyle, board: BoardInfo[][]) {
-        this._playStyle = playStyle;
+    constructor(board: BoardInfo[][]) {
         this._isBlackTurn = true;
         this._board = board;
 
         this.initialBoard = structuredClone(board);
-    }
-
-    public get playStyle(): PlayStyle {
-        return this._playStyle;
     }
 
     public get isBlackTurn(): boolean {

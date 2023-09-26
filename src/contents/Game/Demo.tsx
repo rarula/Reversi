@@ -4,7 +4,7 @@ import { Reversi } from '../../Reversi';
 import { BoardInfo } from '../../types/BoardInfo';
 import Board from '../Reversi/Board';
 
-const reversi = new Reversi('DEMO', [
+const reversi = new Reversi([
     ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
     ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
     ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
