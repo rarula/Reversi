@@ -7,7 +7,9 @@
         "start": "webpack-dev-server --mode development",
         "start-prod": "webpack-dev-server --mode production",
         "build": "webpack --mode development",
-        "build-prod": "webpack --mode production"
+        "build-prod": "webpack --mode production",
+        "predeploy": "yarn run build-prod",
+        "deploy": "gh-pages -d dist"
     },
     "repository": {
         "type": "git",
@@ -35,6 +37,7 @@
         "dprint": "^0.41.0",
         "eslint": "^8.50.0",
         "eslint-plugin-react": "^7.33.2",
+        "gh-pages": "^6.0.0",
         "html-webpack-plugin": "^5.5.3",
         "mini-css-extract-plugin": "^2.7.6",
         "ts-loader": "^9.4.4",
