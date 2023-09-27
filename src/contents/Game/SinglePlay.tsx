@@ -2,7 +2,7 @@ import { css } from '@linaria/core';
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 
-import { Reversi } from '../../Reversi';
+import { Reversi } from '../../Reversi/Reversi';
 import { BoardInfo } from '../../types/BoardInfo';
 import Board from '../Reversi/Board';
 

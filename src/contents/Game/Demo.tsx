@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Reversi } from '../../Reversi';
+import { Reversi } from '../../Reversi/Reversi';
 import { BoardInfo } from '../../types/BoardInfo';
 import Board from '../Reversi/Board';
 
@@ -18,7 +18,15 @@ const reversi = new Reversi([
 const Demo = (): JSX.Element => {
     const [reversiBoard, setReversiBoard] = useState<BoardInfo[][]>(reversi.board);
 
-    return <Board size='390px' canClick={false} reversi={reversi} reversiBoard={reversiBoard} setReversiBoard={setReversiBoard} />;
+    return (
+        <Board
+            size='390px'
+            canClick={false}
+            reversi={reversi}
+            reversiBoard={reversiBoard}
+            setReversiBoard={setReversiBoard}
+        />
+    );
 };
 
 export default Demo;

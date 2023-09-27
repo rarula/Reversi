@@ -1,6 +1,6 @@
-import { BoardInfo } from './types/BoardInfo';
-import { GameInfo } from './types/GameInfo';
-import { StoneType } from './types/StoneType';
+import { BoardInfo } from '../types/BoardInfo';
+import { GameInfo } from '../types/GameInfo';
+import { StoneType } from '../types/StoneType';
 
 export class Reversi {
     private _isBlackTurn: boolean;

@@ -1,6 +1,6 @@
 import { css } from '@linaria/core';
 
-import { Reversi } from '../../Reversi';
+import { Reversi } from '../../Reversi/Reversi';
 import { BoardInfo } from '../../types/BoardInfo';
 import Square from './Square';
 

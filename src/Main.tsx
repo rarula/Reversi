@@ -12,7 +12,6 @@ import Demo from './contents/Game/Demo';
 import SinglePlay from './contents/Game/SinglePlay';
 import VersusPlay from './contents/Game/VersusPlay';
 import Header from './contents/Header';
-import GuideProvider from './contexts/Guide';
 import { PlayStyle } from './types/PlayStyle';
 import { StoneType } from './types/StoneType';
 
@@ -79,32 +78,30 @@ const Main = (): JSX.Element => {
     };
 
     return (
-        <GuideProvider>
-            <div className={globalStyles}>
-                <Modal open={open}>
-                    <Fade in={open}>
-                        <Box sx={boxStyles}>
-                            <Typography variant='h6' align='center'>
-                                遊び方を選んでください
-                            </Typography>
-                            <Divider />
-                            <Box sx={nestedBoxStyles}>
-                                <Button variant='outlined' onClick={chooseSinglePlay}>
-                                    ひとりで
-                                </Button>
-                                <VersusPlayModal chooseVersusPlay={chooseVersusPlay} />
-                            </Box>
+        <div className={globalStyles}>
+            <Modal open={open}>
+                <Fade in={open}>
+                    <Box sx={boxStyles}>
+                        <Typography variant='h6' align='center'>
+                            遊び方を選んでください
+                        </Typography>
+                        <Divider />
+                        <Box sx={nestedBoxStyles}>
+                            <Button variant='outlined' onClick={chooseSinglePlay}>
+                                ひとりで
+                            </Button>
+                            <VersusPlayModal chooseVersusPlay={chooseVersusPlay} />
                         </Box>
-                    </Fade>
-                </Modal>
-                <Header />
-                <main className={mainStyles}>
-                    {playStyle === 'DEMO' && <Demo />}
-                    {playStyle === 'SINGLE' && <SinglePlay />}
-                    {playStyle === 'VERSUS' && <VersusPlay playerStone={playerStone} />}
-                </main>
-            </div>
-        </GuideProvider>
+                    </Box>
+                </Fade>
+            </Modal>
+            <Header />
+            <main className={mainStyles}>
+                {playStyle === 'DEMO' && <Demo />}
+                {playStyle === 'SINGLE' && <SinglePlay />}
+                {playStyle === 'VERSUS' && <VersusPlay playerStone={playerStone} />}
+            </main>
+        </div>
     );
 };
 

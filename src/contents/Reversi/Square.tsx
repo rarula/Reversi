@@ -1,7 +1,7 @@
 import { css } from '@linaria/core';
 
 import { useGuide } from '../../contexts/Guide';
-import { Reversi } from '../../Reversi';
+import { Reversi } from '../../Reversi/Reversi';
 import { BoardInfo } from '../../types/BoardInfo';
 import { StoneType } from '../../types/StoneType';
 import Stone from './Stone';
@@ -61,19 +61,17 @@ const Square = ({ row, column, canClick, reversi, reversiBoard, setReversiBoard 
     const reversible = reversi.getReversibleCoords(stone, row, column);
 
     return (
-        <>
-            <td className={squareStyles} onClick={handleClick}>
-                {reversi.board[row][column] === 'EMPTY'
-                    ? (guide && 1 <= reversible.length) && (
-                        reversi.isBlackTurn
-                            ? <div className={blackOverlayStyles} />
-                            : <div className={whiteOverlayStyles} />
-                    )
-                    : reversi.board[row][column] === 'BLACK'
-                    ? <Stone type='BLACK' />
-                    : <Stone type='WHITE' />}
-            </td>
-        </>
+        <td className={squareStyles} onClick={handleClick}>
+            {reversi.board[row][column] === 'EMPTY'
+                ? (guide && 1 <= reversible.length) && (
+                    reversi.isBlackTurn
+                        ? <div className={blackOverlayStyles} />
+                        : <div className={whiteOverlayStyles} />
+                )
+                : reversi.board[row][column] === 'BLACK'
+                ? <Stone type='BLACK' />
+                : <Stone type='WHITE' />}
+        </td>
     );
 };
 
