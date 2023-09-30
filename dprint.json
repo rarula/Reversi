@@ -1,6 +1,6 @@
 {
     "typescript": {
-        "lineWidth": 180,
+        "lineWidth": 220,
         "indentWidth": 4,
         "useTabs": false,
         "semiColons": "always",
