@@ -1,51 +1,33 @@
-import { css } from '@linaria/core';
+import { css } from '@emotion/react';
 
-import { Reversi } from '../../Reversi/Reversi';
-import { BoardInfo } from '../../types/BoardInfo';
+import { useReversi } from './Reversi';
 import Square from './Square';
 
-type Props = {
-    size: string;
-    canClick: boolean;
-
-    reversi: Reversi;
-    reversiBoard: BoardInfo[][];
-    setReversiBoard: React.Dispatch<React.SetStateAction<BoardInfo[][]>>;
-};
-
 const boardStyles = css`
-    margin: 0 auto;
-    background-color: #3c3c3c;
+    padding: 5px;
+    width: 410px;
+    height: 410px;
+    border-radius: 10px;
+    background-color: var(--board);
+    box-shadow: 0px 0px 4px 1px #000000;
+
+    @media screen and (max-width: 580px) {
+        width: 360px;
+        height: 360px;
+    }
 `;
 
-const Board = ({ size, canClick, reversi, reversiBoard, setReversiBoard }: Props): JSX.Element => {
-    const squaresList: JSX.Element[] = [];
-
-    for (let i = 0; i < 8; i++) {
-        const squares: JSX.Element[] = [];
-
-        for (let j = 0; j < 8; j++) {
-            squares.push(
-                <Square
-                    row={i}
-                    column={j}
-                    canClick={canClick}
-                    reversi={reversi}
-                    reversiBoard={reversiBoard}
-                    setReversiBoard={setReversiBoard}
-                />,
-            );
-        }
-
-        squaresList.push(
-            <tr>{...squares}</tr>,
-        );
-    }
+const Board = (): JSX.Element => {
+    const { board } = useReversi();
 
     return (
-        <table className={boardStyles} style={{ padding: `calc(${size} * 0.01)`, width: size, height: size }}>
+        <table css={boardStyles}>
             <tbody>
-                {...squaresList}
+                {board.map((cellStates, rowIndex) => (
+                    <tr key={rowIndex}>
+                        {cellStates.map((cellState, columnIndex) => <Square key={columnIndex} move={{ row: rowIndex, col: columnIndex }} cellState={cellState} />)}
+                    </tr>
+                ))}
             </tbody>
         </table>
     );

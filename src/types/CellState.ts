@@ -1,4 +1,4 @@
-export type BoardInfo =
+export type CellState =
     | 'BLACK'
     | 'WHITE'
     | 'EMPTY';

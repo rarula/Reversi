@@ -1,26 +1,23 @@
-import { css } from '@linaria/core';
+import { css } from '@emotion/react';
 
 import { useGuide } from '../../contexts/Guide';
-import { Reversi } from '../../Reversi/Reversi';
-import { BoardInfo } from '../../types/BoardInfo';
+import { getReversibleCoords, makeMove } from '../../Reversi/engine';
+import { CellState } from '../../types/CellState';
+import { Move } from '../../types/Move';
 import { StoneType } from '../../types/StoneType';
+import { useReversi } from './Reversi';
 import Stone from './Stone';
 
 type Props = {
-    row: number;
-    column: number;
-    canClick: boolean;
-
-    reversi: Reversi;
-    reversiBoard: BoardInfo[][];
-    setReversiBoard: React.Dispatch<React.SetStateAction<BoardInfo[][]>>;
+    move: Move;
+    cellState: CellState;
 };
 
 const squareStyles = css`
     position: relative;
-
-    background-color: #32a852;
     user-select: none;
+    border-radius: 2px;
+    background-color: var(--square);
 `;
 
 const blackOverlayStyles = css`
@@ -28,10 +25,9 @@ const blackOverlayStyles = css`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
     width: 101%;
     height: 101%;
-    background-color: #0000006d;
+    background-color: var(--black-overlay);
 `;
 
 const whiteOverlayStyles = css`
@@ -39,36 +35,51 @@ const whiteOverlayStyles = css`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
     width: 101%;
     height: 101%;
-    background-color: #ffffff6d;
+    background-color: var(--white-overlay);
 `;
 
-const Square = ({ row, column, canClick, reversi, reversiBoard, setReversiBoard }: Props): JSX.Element => {
+const lastPlacedOverlayStyles = css`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 101%;
+    height: 101%;
+    background-color: var(--last-placed-overlay);
+`;
+
+const Square = ({ move, cellState }: Props): JSX.Element => {
+    const { isPlayerTurn, isBlackTurn, toggleTurn, board, setBoard, lastMove, setLastMove } = useReversi();
     const { guide } = useGuide();
 
-    const handleClick = (): void => {
-        if (canClick) {
-            reversi.tryPlace(row, column);
+    const friendlyStone: StoneType = isBlackTurn ? 'BLACK' : 'WHITE';
 
-            // structuredClone()で配列のディープコピーを作成する
-            setReversiBoard(structuredClone(reversiBoard));
+    const handleClick = (): void => {
+        if (isPlayerTurn) {
+            const reversible = getReversibleCoords(board, friendlyStone, move);
+
+            if (reversible.length) {
+                toggleTurn();
+                setBoard(makeMove(board, friendlyStone, move));
+                setLastMove(move);
+            }
         }
     };
 
-    const stone: StoneType = reversi.isBlackTurn ? 'BLACK' : 'WHITE';
-    const reversible = reversi.getReversibleCoords(stone, row, column);
+    const reversible = getReversibleCoords(board, friendlyStone, move);
 
     return (
-        <td className={squareStyles} onClick={handleClick}>
-            {reversi.board[row][column] === 'EMPTY'
+        <td css={squareStyles} onClick={handleClick}>
+            {(guide && lastMove?.row === move.row && lastMove.col === move.col) && <div css={lastPlacedOverlayStyles} />}
+            {cellState === 'EMPTY'
                 ? (guide && 1 <= reversible.length) && (
-                    reversi.isBlackTurn
-                        ? <div className={blackOverlayStyles} />
-                        : <div className={whiteOverlayStyles} />
+                    isBlackTurn
+                        ? <div css={blackOverlayStyles} />
+                        : <div css={whiteOverlayStyles} />
                 )
-                : reversi.board[row][column] === 'BLACK'
+                : cellState === 'BLACK'
                 ? <Stone type='BLACK' />
                 : <Stone type='WHITE' />}
         </td>

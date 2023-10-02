@@ -1,0 +1,39 @@
+:root[data-theme='light'] {
+    --text-0: #5a5a5a;
+    --text-1: #8b8b8b;
+    --background-0: #f7f7f7;
+    --background-1: #cbcbcb;
+    --background-2: #b3b3b3;
+    --border-0: #5a5a5a;
+    --board: #575757;
+    --square: #48c269;
+    --black-overlay: #0000006d;
+    --white-overlay: #ffffff6d;
+    --last-placed-overlay: #ff89896d;
+}
+
+:root[data-theme='dark'] {
+    --text-0: #dcdcdc;
+    --text-1: #bcbcbc;
+    --background-0: #1c1c1c;
+    --background-1: #2b2b2b;
+    --background-2: #414141;
+    --border-0: #6c6c6c;
+    --board: #3c3c3c;
+    --square: #32a852;
+    --black-overlay: #0000006d;
+    --white-overlay: #ffffff6d;
+    --last-placed-overlay: #ff89896d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-0);
+    background-color: var(--background-0);
+}
