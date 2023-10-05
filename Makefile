@@ -7,4 +7,6 @@ src/wasm/reversi.mjs: wasm/ai.cpp wasm/engine.cpp wasm/bit.cpp
 	-s USE_ES6_IMPORT_META=0 \
 	-s EXPORTED_FUNCTIONS='["_malloc", "_free"]' \
 	-s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]' \
+	-s TOTAL_MEMORY=629145600 \
+	-s ALLOW_MEMORY_GROWTH=1 \
 	-O3
