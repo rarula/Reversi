@@ -9,7 +9,8 @@ import { useState } from 'react';
 
 import Header from './contents/Header';
 import Reversi from './contents/Reversi/Reversi';
-import { StoneType } from './types/StoneType';
+import { useWasm } from './contexts/Wasm';
+import { StoneType } from './types/Reversi';
 
 const mainStyles = css`
     display: flex;
@@ -32,7 +33,7 @@ const infoStyles = css`
     }
 `;
 
-const versusModalSx: SxProps = {
+const modalSx: SxProps = {
     position: 'absolute',
     top: '50%',
     left: '50%',
@@ -46,7 +47,7 @@ const versusModalSx: SxProps = {
     outline: 0,
 };
 
-const nestedVersusModalSx: SxProps = {
+const nestedModalSx: SxProps = {
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: '10px',
@@ -54,12 +55,14 @@ const nestedVersusModalSx: SxProps = {
 };
 
 const Main = (): JSX.Element => {
-    const [showBoard, setShowBoard] = useState(false);
-    const [playableStones, setPlayableStones] = useState<StoneType[]>([]);
+    const { isLoaded } = useWasm();
 
+    const [showBoard, setShowBoard] = useState(false);
     const [openVersusModal, setVersusModal] = useState(false);
     const [openVersusTurnModal, setVersusTurnModal] = useState(false);
-    const [aiLevel, setAiLevel] = useState(2);
+
+    const [playableStones, setPlayableStones] = useState<StoneType[]>([]);
+    const [aiLevel, setAiLevel] = useState(3);
 
     const clickSinglePlay = (): void => {
         setShowBoard(true);
@@ -71,14 +74,15 @@ const Main = (): JSX.Element => {
     };
 
     const chooseTurn = (turn: StoneType): void => {
-        setPlayableStones([turn]);
         setShowBoard(true);
         setVersusModal(false);
         setVersusTurnModal(false);
+        setPlayableStones([turn]);
     };
 
     const handleHideBoard = (): void => {
         setShowBoard(false);
+        setAiLevel(3);
     };
 
     const handleHideVersusModal = (): void => {
@@ -91,13 +95,22 @@ const Main = (): JSX.Element => {
 
     return (
         <>
+            <Modal open={!isLoaded}>
+                <Fade in={!isLoaded}>
+                    <Box sx={modalSx}>
+                        <Typography variant='body2' align='center'>
+                            ロード中...
+                        </Typography>
+                    </Box>
+                </Fade>
+            </Modal>
             <Modal open={openVersusTurnModal} onClose={handleHideVersusTurnModal}>
                 <Fade in={openVersusTurnModal}>
-                    <Box sx={versusModalSx} style={{ width: '320px' }}>
+                    <Box sx={modalSx} style={{ width: '320px' }}>
                         <Typography variant='body2' align='center'>
                             あなたの手番を選択してください
                         </Typography>
-                        <Box sx={nestedVersusModalSx}>
+                        <Box sx={nestedModalSx}>
                             <Button onClick={(): void => chooseTurn('BLACK')}>
                                 先手（黒石）
                             </Button>
@@ -110,14 +123,14 @@ const Main = (): JSX.Element => {
             </Modal>
             <Modal open={openVersusModal} onClose={handleHideVersusModal}>
                 <Fade in={openVersusModal}>
-                    <Box sx={versusModalSx}>
+                    <Box sx={modalSx}>
                         <Typography variant='body2' align='center'>
                             AIのレベルを選択してください
                         </Typography>
-                        <Box sx={nestedVersusModalSx}>
-                            <Slider valueLabelDisplay='auto' marks defaultValue={2} step={1} min={1} max={7} onChange={(event, value): void => setAiLevel(value as number)} />
+                        <Box sx={nestedModalSx}>
+                            <Slider valueLabelDisplay='auto' marks defaultValue={3} step={1} min={1} max={9} onChange={(event, value): void => setAiLevel(value as number)} />
                         </Box>
-                        <Box sx={nestedVersusModalSx}>
+                        <Box sx={nestedModalSx}>
                             <Button onClick={chooseAiLevel}>
                                 OK
                             </Button>

@@ -7,11 +7,9 @@ import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import { createContext, useContext, useState } from 'react';
 
-import { searchBestMove } from '../../Reversi/ai';
-import { getStoneCount, isGameEnd, makeMove, shouldSkip } from '../../Reversi/engine';
-import { CellState } from '../../types/CellState';
-import { Move } from '../../types/Move';
-import { StoneType } from '../../types/StoneType';
+import { useWasm } from '../../contexts/Wasm';
+import { StoneType } from '../../types/Reversi';
+import { Move, ReversiEngine } from '../../types/Wasm';
 import Board from './Board';
 
 type Props = {
@@ -20,11 +18,12 @@ type Props = {
 };
 
 type ContextReversi = {
+    engine?: ReversiEngine;
     isPlayerTurn: boolean;
     isBlackTurn: boolean;
     toggleTurn: () => void;
-    board: CellState[][];
-    setBoard: (board: CellState[][]) => void;
+    setBlackBoard: (board: bigint) => void;
+    setWhiteBoard: (board: bigint) => void;
     lastMove: Move | null;
     setLastMove: (lastMove: Move) => void;
 };
@@ -33,8 +32,8 @@ const ContextReversi = createContext<ContextReversi>({
     isPlayerTurn: true,
     isBlackTurn: true,
     toggleTurn: () => {},
-    board: [],
-    setBoard: () => {},
+    setBlackBoard: () => {},
+    setWhiteBoard: () => {},
     lastMove: null,
     setLastMove: () => {},
 });
@@ -80,41 +79,43 @@ const skipModalSx: SxProps = {
     outline: 0,
 };
 
-const reversiBoard: CellState[][] = [
-    ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'WHITE', 'BLACK', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'BLACK', 'WHITE', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
-    ['EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY', 'EMPTY'],
-];
-
 const Reversi = ({ aiLevel, playableStones }: Props): JSX.Element => {
-    const [board, setBoard] = useState(structuredClone(reversiBoard));
+    const { isLoaded, Reversi, searchBestMove } = useWasm();
+
+    if (!isLoaded || !Reversi || !searchBestMove) {
+        return <span>ロード中...</span>;
+    }
+
+    // 00000000 00000000 00000000 00001000 00010000 00000000 00000000 00000000
+    const [blackBoard, setBlackBoard] = useState(0x810000000n);
+
+    // 00000000 00000000 00000000 00010000 00001000 00000000 00000000 00000000
+    const [whiteBoard, setWhiteBoard] = useState(0x1008000000n);
+
     const [isBlackTurn, setBlackTurn] = useState(true);
     const [lastMove, setLastMove] = useState<Move | null>(null);
     const [openSkipModal, setSkipModal] = useState(false);
 
+    const engine = new Reversi(isBlackTurn, blackBoard.toString(), whiteBoard.toString());
     const isPlayerTurn = ((isBlackTurn && playableStones.includes('BLACK')) || !isBlackTurn && playableStones.includes('WHITE'));
-
     const toggleTurn = (): void => {
         setBlackTurn((prev) => !prev);
     };
 
     const value: ContextReversi = {
+        engine,
         isPlayerTurn,
         isBlackTurn,
         toggleTurn,
-        board,
-        setBoard,
+        setBlackBoard,
+        setWhiteBoard,
         lastMove,
         setLastMove,
     };
 
     const clickRestart = (): void => {
-        setBoard(structuredClone(reversiBoard));
+        setBlackBoard(0x810000000n);
+        setWhiteBoard(0x1008000000n);
         setBlackTurn(true);
         setLastMove(null);
     };
@@ -124,27 +125,29 @@ const Reversi = ({ aiLevel, playableStones }: Props): JSX.Element => {
         setSkipModal(false);
     };
 
-    const shouldFinish = isGameEnd(board);
-    const shouldPass = shouldSkip(board, isBlackTurn ? 'BLACK' : 'WHITE');
+    const shouldFinish = engine.isFinished();
+    const shouldPass = engine.isPass();
 
     if (!isPlayerTurn && !shouldFinish && !shouldPass) {
         setTimeout(() => {
-            const friendlyStone: StoneType = isBlackTurn ? 'BLACK' : 'WHITE';
-            const move = searchBestMove(structuredClone(board), aiLevel, friendlyStone);
+            const move = searchBestMove(isBlackTurn, blackBoard.toString(), whiteBoard.toString(), aiLevel);
 
             if (move) {
-                setBoard(makeMove(board, friendlyStone, move));
+                const movedReversi = engine.move(move.row, move.col);
+
+                setBlackBoard(BigInt(movedReversi.getBlackBoard()));
+                setWhiteBoard(BigInt(movedReversi.getWhiteBoard()));
                 setLastMove(move);
                 toggleTurn();
             }
-        }, 500);
+        }, 100);
     }
 
     if (!openSkipModal && !isPlayerTurn && shouldPass) {
         setSkipModal(true);
     }
 
-    const { blackStones, whiteStones } = getStoneCount(board);
+    const { blackStones, whiteStones } = engine.getResult();
     const totalStones = blackStones + whiteStones;
 
     return (

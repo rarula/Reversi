@@ -1,10 +1,8 @@
 import { css } from '@emotion/react';
 
 import { useGuide } from '../../contexts/Guide';
-import { getReversibleCoords, makeMove } from '../../Reversi/engine';
-import { CellState } from '../../types/CellState';
-import { Move } from '../../types/Move';
-import { StoneType } from '../../types/StoneType';
+import { CellState } from '../../types/Reversi';
+import { Move } from '../../types/Wasm';
 import { useReversi } from './Reversi';
 import Stone from './Stone';
 
@@ -51,30 +49,29 @@ const lastPlacedOverlayStyles = css`
 `;
 
 const Square = ({ move, cellState }: Props): JSX.Element => {
-    const { isPlayerTurn, isBlackTurn, toggleTurn, board, setBoard, lastMove, setLastMove } = useReversi();
+    const { engine, isPlayerTurn, isBlackTurn, toggleTurn, setBlackBoard, setWhiteBoard, lastMove, setLastMove } = useReversi();
     const { guide } = useGuide();
 
-    const friendlyStone: StoneType = isBlackTurn ? 'BLACK' : 'WHITE';
+    const legal = engine?.legal(move.row, move.col);
 
     const handleClick = (): void => {
         if (isPlayerTurn) {
-            const reversible = getReversibleCoords(board, friendlyStone, move);
+            if (legal && engine) {
+                const movedReversi = engine.move(move.row, move.col);
 
-            if (reversible.length) {
-                toggleTurn();
-                setBoard(makeMove(board, friendlyStone, move));
+                setBlackBoard(BigInt(movedReversi.getBlackBoard()));
+                setWhiteBoard(BigInt(movedReversi.getWhiteBoard()));
                 setLastMove(move);
+                toggleTurn();
             }
         }
     };
-
-    const reversible = getReversibleCoords(board, friendlyStone, move);
 
     return (
         <td css={squareStyles} onClick={handleClick}>
             {(guide && lastMove?.row === move.row && lastMove.col === move.col) && <div css={lastPlacedOverlayStyles} />}
             {cellState === 'EMPTY'
-                ? (guide && 1 <= reversible.length) && (
+                ? (guide && legal) && (
                     isBlackTurn
                         ? <div css={blackOverlayStyles} />
                         : <div css={whiteOverlayStyles} />

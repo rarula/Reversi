@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 
-import { StoneType } from '../../types/StoneType';
+import { StoneType } from '../../types/Reversi';
 
 type Props = {
     type: StoneType;

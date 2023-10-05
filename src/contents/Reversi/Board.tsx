@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
 
+import { CellState } from '../../types/Reversi';
+import { ReversiEngine } from '../../types/Wasm';
 import { useReversi } from './Reversi';
 import Square from './Square';
 
@@ -18,7 +20,10 @@ const boardStyles = css`
 `;
 
 const Board = (): JSX.Element => {
-    const { board } = useReversi();
+    const { engine } = useReversi();
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const board = getCellStates(engine!);
 
     return (
         <table css={boardStyles}>
@@ -31,6 +36,38 @@ const Board = (): JSX.Element => {
             </tbody>
         </table>
     );
+};
+
+const getCellStates = (engine: ReversiEngine): CellState[][] => {
+    const cellStatesList: CellState[][] = [];
+
+    for (let i = 0; i < 8; i++) {
+        const cellStates: CellState[] = [];
+
+        for (let j = 0; j < 8; j++) {
+            cellStates.push(getCellState(engine, i, j));
+        }
+
+        cellStatesList.push(cellStates);
+    }
+
+    return cellStatesList;
+};
+
+const getCellState = (engine: ReversiEngine, row: number, col: number): CellState => {
+    const pos = 63 - (row * 8 + col);
+    const mask = 1n << BigInt(pos);
+
+    const blackBoard = BigInt(engine.getBlackBoard());
+    const whiteBoard = BigInt(engine.getWhiteBoard());
+
+    if ((blackBoard & mask) !== 0n) {
+        return 'BLACK';
+    } else if ((whiteBoard & mask) !== 0n) {
+        return 'WHITE';
+    }
+
+    return 'EMPTY';
 };
 
 export default Board;
