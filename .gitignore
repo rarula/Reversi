@@ -1,2 +1,4 @@
 node_modules/
 dist/
+
+c_cpp_properties.json
