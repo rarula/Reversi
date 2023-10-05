@@ -21,7 +21,9 @@ module.exports = {
         '@typescript-eslint',
     ],
     'rules': {
+        'eqeqeq': 'error',
         '@typescript-eslint/explicit-function-return-type': 'error',
+        '@typescript-eslint/no-non-null-assertion': 'error',
         'react/react-in-jsx-scope': 'off',
         'react/no-unknown-property': ['error', { 'ignore': ['css'] }],
     },
